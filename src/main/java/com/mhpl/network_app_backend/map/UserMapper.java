@@ -1,0 +1,29 @@
+package com.mhpl.network_app_backend.map;
+
+
+import com.mhpl.network_app_backend.dto.UserDTO;
+import com.mhpl.network_app_backend.entity.User;
+
+public class UserMapper {
+    public static UserDTO toUserDTO(User user) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setUsername(user.getUsername());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setPassword(user.getPassword());
+        userDTO.setAvatar(user.getAvatar());
+        userDTO.setCreateAt(user.getCreateAt());
+        return userDTO;
+    }
+
+    public static User toUser(UserDTO userDTO) {
+        User user = new User();
+        user.setId(userDTO.getId());
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+        user.setPassword(userDTO.getPassword());
+        user.setAvatar(userDTO.getAvatar());
+        user.setCreateAt(userDTO.getCreateAt());
+        return user;
+    }
+}
