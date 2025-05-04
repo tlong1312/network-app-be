@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository) {
@@ -23,6 +23,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
+
+        if (userRepository.findByUsername(userDTO.getUsername()).isPresent()){
+            throw new IllegalArgumentException("Tên đăng nhập đã tồn tại!");
+        }
+
+        if (userRepository.findAll().stream()
+                .anyMatch(user -> user .getEmail().equals(userDTO.getEmail()))) {
+            throw new IllegalArgumentException("Email đã tồn tại!");
+        }
+
         User user = UserMapper.toUser(userDTO);
         user.setUsername(user.getUsername());
         user.setEmail(user.getEmail());
