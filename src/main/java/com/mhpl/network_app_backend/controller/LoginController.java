@@ -2,6 +2,7 @@ package com.mhpl.network_app_backend.controller;
 
 import com.mhpl.network_app_backend.config.JwtUtil;
 import com.mhpl.network_app_backend.entity.User;
+import com.mhpl.network_app_backend.map.UserMapper;
 import com.mhpl.network_app_backend.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,7 +44,8 @@ public class LoginController {
                     .orElseThrow(() -> new RuntimeException("User not found"));
             return ResponseEntity.ok(Map.of(
                     "token", token,
-                    "role", user.getRole()
+                    "role", user.getRole(),
+                    "user", UserMapper.toCurrentUserDTO(user)
                     ));
         } catch (AuthenticationException e) {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid username or password"));

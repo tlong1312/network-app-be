@@ -7,6 +7,7 @@ import com.mhpl.network_app_backend.map.PostMapper;
 import com.mhpl.network_app_backend.repository.PostRepository;
 import com.mhpl.network_app_backend.repository.UserRepository;
 import com.mhpl.network_app_backend.service.PostService;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostDTO> getPosts() {
-        return postRepository.findAll()
+        return postRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
                 .stream()
                 .map(PostMapper::toPostDTO)
                 .collect(Collectors.toList());
