@@ -8,6 +8,8 @@ import com.mhpl.network_app_backend.repository.CommentRepository;
 import com.mhpl.network_app_backend.repository.PostRepository;
 import com.mhpl.network_app_backend.repository.UserRepository;
 import com.mhpl.network_app_backend.service.CommentService;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import com.mhpl.network_app_backend.dto.CommentDTO;
 
@@ -29,11 +31,19 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDTO createComment(CommentDTO commentDTO, int postId, int userId) {
+    public CommentDTO createComment(CommentDTO commentDTO, int postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post not found with id: " + postId));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username;
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails) principal).getUsername();
+        }else {
+            username = principal.toString();
+        }
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         Comment comment = new Comment();
         comment.setContent(commentDTO.getContent());

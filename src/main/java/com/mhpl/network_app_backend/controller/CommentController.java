@@ -17,11 +17,10 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @PostMapping("/{postId}/user/{userId}")
+    @PostMapping("/{postId}")
     public ResponseEntity<CommentDTO> createComment(@RequestBody CommentDTO commentDTO,
-                                                    @PathVariable int postId,
-                                                    @PathVariable int userId) {
-        CommentDTO createdComment = commentService.createComment(commentDTO, postId, userId);
+                                                    @PathVariable int postId) {
+        CommentDTO createdComment = commentService.createComment(commentDTO, postId);
         return ResponseEntity.ok(createdComment);
     }
 

@@ -5,7 +5,7 @@ import com.mhpl.network_app_backend.dto.CommentDTO;
 import java.util.List;
 
 public interface CommentService {
-    CommentDTO createComment(CommentDTO commentDTO, int postId, int userId);
+    CommentDTO createComment(CommentDTO commentDTO, int postId);
 
     List<CommentDTO> getAllCommentsByPostId(int postId);
 
