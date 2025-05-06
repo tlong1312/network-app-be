@@ -16,4 +16,6 @@ public interface PostService {
     void deletePost(int postId) throws AccessDeniedException;
 
     void likePost(int postId);
+    // Thêm declaration tìm kiếm
+    List<PostDTO> searchPosts(String keyword);
 }

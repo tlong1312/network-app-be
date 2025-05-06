@@ -123,4 +123,12 @@ public class PostServiceImpl implements PostService {
         post.setLikeCount(post.getLikeCount() + 1);
         postRepository.save(post);
     }
+    @Override
+    public List<PostDTO> searchPosts(String keyword) {
+        return postRepository.findByContentContainingIgnoreCase(keyword)
+                .stream()
+                .map(PostMapper::toPostDTO)
+                .collect(Collectors.toList());
+    }
+
 }
