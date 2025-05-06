@@ -43,4 +43,7 @@ public class Post {
 
     @Column(name = "like_count")
     private int likeCount;
+
+    @Column(name = "is_liked")
+    private Boolean isLiked;
 }

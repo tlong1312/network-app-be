@@ -50,6 +50,7 @@ public class CommentServiceImpl implements CommentService {
         comment.setCreatedAt(LocalDateTime.now());
         comment.setPost(post);
         comment.setUser(user);
+        comment.getPost().setCommentCount(comment.getPost().getCommentCount() + 1);
 
         Comment savedComment = commentRepository.save(comment);
         return CommentMapper.toCommentDTO(savedComment);

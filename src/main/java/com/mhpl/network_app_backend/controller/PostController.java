@@ -62,7 +62,7 @@ public class PostController {
         }
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/like")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> likePost(@PathVariable int id) {
         try {

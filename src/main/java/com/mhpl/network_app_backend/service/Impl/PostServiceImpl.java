@@ -1,9 +1,11 @@
 package com.mhpl.network_app_backend.service.Impl;
 
 import com.mhpl.network_app_backend.dto.PostDTO;
+import com.mhpl.network_app_backend.entity.Like;
 import com.mhpl.network_app_backend.entity.Post;
 import com.mhpl.network_app_backend.entity.User;
 import com.mhpl.network_app_backend.map.PostMapper;
+import com.mhpl.network_app_backend.repository.LikeRepository;
 import com.mhpl.network_app_backend.repository.PostRepository;
 import com.mhpl.network_app_backend.repository.UserRepository;
 import com.mhpl.network_app_backend.service.PostService;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,10 +24,12 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final LikeRepository likeRepository;
 
-    public PostServiceImpl(PostRepository postRepository, UserRepository userRepository) {
+    public PostServiceImpl(PostRepository postRepository, UserRepository userRepository, LikeRepository likeRepository) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.likeRepository = likeRepository;
     }
 
     @Override
@@ -47,14 +52,20 @@ public class PostServiceImpl implements PostService {
         post.setCreatedAt(LocalDateTime.now());
         post.setCommentCount(0);
         post.setLikeCount(0);
-        return PostMapper.toPostDTO(postRepository.save(post));
+        return PostMapper.toPostDTO(postRepository.save(post), false);
     }
 
     @Override
     public List<PostDTO> getPosts() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = (principal instanceof UserDetails) ? ((UserDetails) principal).getUsername() : principal.toString();
         return postRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
                 .stream()
-                .map(PostMapper::toPostDTO)
+                .map(post -> {
+                    boolean isLiked = likeRepository.existsByPostAndUser(post, userRepository.findByUsername(username)
+                            .orElseThrow(() -> new RuntimeException("User not found")));
+                    return PostMapper.toPostDTO(post, isLiked);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -85,8 +96,9 @@ public class PostServiceImpl implements PostService {
         if (postDTO.getMediaUrl() != null) {
             post.setMediaUrl(postDTO.getMediaUrl());
         }
+        boolean isLiked = likeRepository.existsByPostAndUser(post, user);
 
-        return PostMapper.toPostDTO(postRepository.save(post));
+        return PostMapper.toPostDTO(postRepository.save(post), isLiked);
 
     }
 
@@ -118,9 +130,37 @@ public class PostServiceImpl implements PostService {
     @Override
     public void likePost(int postId) {
         Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new IllegalArgumentException("Post with ID " + postId + " not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Post with ID " + postId + " not found"));
 
-        post.setLikeCount(post.getLikeCount() + 1);
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username;
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails) principal).getUsername();
+        } else {
+            username = principal.toString();
+        }
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Like> existingLike = likeRepository.findByPostAndUser(post, user);
+
+
+        if (!existingLike.isEmpty()) {
+
+            likeRepository.deleteAll(existingLike);
+            post.setLikeCount(post.getLikeCount() - existingLike.size());
+            post.setIsLiked(false);
+        } else {
+
+            Like like = new Like();
+            like.setPost(post);
+            like.setUser(user);
+            likeRepository.save(like);
+            post.setLikeCount(post.getLikeCount() + 1);
+            post.setIsLiked(true);
+        }
+
         postRepository.save(post);
     }
 }

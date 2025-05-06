@@ -15,5 +15,6 @@ public class PostDTO {
     private List<CommentDTO> comments;
     private int commentCount;
     private int likeCount;
+    private boolean isLiked;
 
 }

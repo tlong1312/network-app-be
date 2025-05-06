@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class PostMapper {
 
-    public static PostDTO toPostDTO(Post post) {
+    public static PostDTO toPostDTO(Post post, boolean isLiked) {
         PostDTO postDTO = new PostDTO();
         postDTO.setId(post.getId());
         postDTO.setContent(post.getContent());
@@ -21,6 +21,7 @@ public class PostMapper {
         postDTO.setComments(post.getComments().stream()
                 .map(CommentMapper::toCommentDTO)
                 .collect(Collectors.toList()));
+        postDTO.setLiked(isLiked);
         return postDTO;
     }
 
