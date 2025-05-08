@@ -29,7 +29,7 @@ public class Post {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "media_url", columnDefinition = "LONGTEXT")
+    @Column(name = "media_url", columnDefinition = "TEXT")
     private String mediaUrl;
 
     @Column(name = "created_at")
