@@ -163,4 +163,13 @@ public class PostServiceImpl implements PostService {
 
         postRepository.save(post);
     }
+    @Override
+    public List<PostDTO> searchPosts(String keyword) {
+        return postRepository.findByContentContainingIgnoreCase(keyword)
+                .stream()
+                .map(post -> PostMapper.toPostDTO(post, false))
+                .collect(Collectors.toList());
+    }
+
 }
+
