@@ -18,4 +18,6 @@ public interface UserService {
     UserDTO updateUser(int userId, UserDTO userDTO);
 
     void deleteUser(int userId);
+
+    List<UserDTO> searchUsers(String keyword);
 }

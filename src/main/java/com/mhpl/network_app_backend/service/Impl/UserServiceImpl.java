@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -69,4 +70,12 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(int userId) {
 
     }
+    @Override
+    public List<UserDTO> searchUsers(String keyword) {
+        return userRepository.findByUsernameContainingIgnoreCase(keyword)
+                .stream()
+                .map(UserMapper::toUserDTO)
+                .collect(Collectors.toList());
+    }
+
 }
