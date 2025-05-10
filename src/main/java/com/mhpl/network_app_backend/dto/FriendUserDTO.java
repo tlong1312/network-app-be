@@ -1,14 +1,16 @@
 package com.mhpl.network_app_backend.dto;
 
+import com.mhpl.network_app_backend.entity.Status;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
-public class CurrentUserDTO {
+public class FriendUserDTO {
     private int id;
     private String username;
     private String email;
     private String avatar;
     private LocalDateTime createAt;
+    private Status status;
 }

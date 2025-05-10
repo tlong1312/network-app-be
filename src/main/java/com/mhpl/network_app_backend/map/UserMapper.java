@@ -1,8 +1,9 @@
 package com.mhpl.network_app_backend.map;
 
 
-import com.mhpl.network_app_backend.dto.CurrentUserDTO;
+import com.mhpl.network_app_backend.dto.FriendUserDTO;
 import com.mhpl.network_app_backend.dto.UserDTO;
+import com.mhpl.network_app_backend.entity.Status;
 import com.mhpl.network_app_backend.entity.User;
 
 public class UserMapper {
@@ -27,21 +28,24 @@ public class UserMapper {
         return user;
     }
 
-    public static User toUser(CurrentUserDTO currentUserDTO) {
+    public static User toUser(FriendUserDTO friendUserDTO) {
         User user = new User();
-        user.setUsername(currentUserDTO.getUsername());
-        user.setEmail(currentUserDTO.getEmail());
-        user.setAvatar(currentUserDTO.getAvatar());
-        user.setCreateAt(currentUserDTO.getCreateAt());
+        user.setId(friendUserDTO.getId());
+        user.setUsername(friendUserDTO.getUsername());
+        user.setEmail(friendUserDTO.getEmail());
+        user.setAvatar(friendUserDTO.getAvatar());
+        user.setCreateAt(friendUserDTO.getCreateAt());
         return user;
     }
 
-    public static CurrentUserDTO toCurrentUserDTO(User user) {
-        CurrentUserDTO currentUserDTO = new CurrentUserDTO();
-        currentUserDTO.setUsername(user.getUsername());
-        currentUserDTO.setEmail(user.getEmail());
-        currentUserDTO.setAvatar(user.getAvatar());
-        currentUserDTO.setCreateAt(user.getCreateAt());
-        return currentUserDTO;
+    public static FriendUserDTO toFriendUserDTO(User user, String status) {
+        FriendUserDTO friendUserDTO = new FriendUserDTO();
+        friendUserDTO.setId(user.getId());
+        friendUserDTO.setUsername(user.getUsername());
+        friendUserDTO.setEmail(user.getEmail());
+        friendUserDTO.setAvatar(user.getAvatar());
+        friendUserDTO.setCreateAt(user.getCreateAt());
+        friendUserDTO.setStatus(status != null ? Status.valueOf(status) : null);
+        return friendUserDTO;
     }
 }
