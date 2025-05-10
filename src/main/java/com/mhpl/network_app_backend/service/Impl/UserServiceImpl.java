@@ -53,7 +53,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDTO> getAllUsers() {
-        return List.of();
+        return userRepository.findAll()
+                .stream()
+                .map(UserMapper::toUserDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -77,5 +80,6 @@ public class UserServiceImpl implements UserService {
                 .map(UserMapper::toUserDTO)
                 .collect(Collectors.toList());
     }
+
 
 }
