@@ -45,7 +45,7 @@ public class LoginController {
             return ResponseEntity.ok(Map.of(
                     "token", token,
                     "role", user.getRole(),
-                    "user", UserMapper.toCurrentUserDTO(user)
+                    "user", UserMapper.toUserDTO(user)
                     ));
         } catch (AuthenticationException e) {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid username or password"));

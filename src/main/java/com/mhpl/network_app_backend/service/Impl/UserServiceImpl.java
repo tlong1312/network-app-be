@@ -48,7 +48,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO getUserById(int userId) {
-        return null;
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return UserMapper.toUserDTO(user);
     }
 
     @Override
@@ -61,17 +63,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO findByUserName(String username) {
-        return null;
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Username " + username + " not found"));
+        return UserMapper.toUserDTO(user);
     }
 
     @Override
     public UserDTO updateUser(int userId, UserDTO userDTO) {
-        return null;
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+        user.setAvatar(userDTO.getAvatar());
+        return UserMapper.toUserDTO(userRepository.save(user));
     }
 
     @Override
     public void deleteUser(int userId) {
-
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        userRepository.delete(user);
     }
     @Override
     public List<UserDTO> searchUsers(String keyword) {
