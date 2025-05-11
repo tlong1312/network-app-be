@@ -11,6 +11,7 @@ public class UserMapper {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setUsername(user.getUsername());
+        userDTO.setFullName(user.getFullName());
         userDTO.setEmail(user.getEmail());
         userDTO.setAvatar(user.getAvatar());
         userDTO.setCreateAt(user.getCreateAt());
@@ -21,6 +22,7 @@ public class UserMapper {
         User user = new User();
         user.setId(userDTO.getId());
         user.setUsername(userDTO.getUsername());
+        user.setFullName(userDTO.getFullName());
         user.setEmail(userDTO.getEmail());
         user.setPassword(userDTO.getPassword());
         user.setAvatar(userDTO.getAvatar());
@@ -42,6 +44,7 @@ public class UserMapper {
         FriendUserDTO friendUserDTO = new FriendUserDTO();
         friendUserDTO.setId(user.getId());
         friendUserDTO.setUsername(user.getUsername());
+        friendUserDTO.setFullName(user.getFullName());
         friendUserDTO.setEmail(user.getEmail());
         friendUserDTO.setAvatar(user.getAvatar());
         friendUserDTO.setCreateAt(user.getCreateAt());

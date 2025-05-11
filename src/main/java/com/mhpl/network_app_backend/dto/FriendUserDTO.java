@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class FriendUserDTO {
     private int id;
     private String username;
+    private String fullName;
     private String email;
     private String avatar;
     private LocalDateTime createAt;

@@ -36,6 +36,7 @@ public class UserServiceImpl implements UserService {
 
         User user = UserMapper.toUser(userDTO);
         user.setUsername(user.getUsername());
+        user.setFullName(userDTO.getFullName());
         user.setEmail(user.getEmail());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole("ROLE_USER");
@@ -72,7 +73,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO updateUser(int userId, UserDTO userDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        user.setUsername(userDTO.getUsername());
+        user.setFullName(userDTO.getFullName());
         user.setEmail(userDTO.getEmail());
         user.setAvatar(userDTO.getAvatar());
         return UserMapper.toUserDTO(userRepository.save(user));
