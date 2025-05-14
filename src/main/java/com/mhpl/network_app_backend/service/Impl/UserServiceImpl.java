@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (userRepository.findAll().stream()
-                .anyMatch(user -> user .getEmail().equals(userDTO.getEmail()))) {
+                .anyMatch(user -> user.getEmail() != null && user.getEmail().equals(userDTO.getEmail()))) {
             throw new IllegalArgumentException("Email đã tồn tại!");
         }
 

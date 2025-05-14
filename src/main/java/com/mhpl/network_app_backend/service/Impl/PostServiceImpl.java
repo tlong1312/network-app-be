@@ -171,5 +171,23 @@ public class PostServiceImpl implements PostService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<PostDTO> getPostsByCurrentUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = (principal instanceof UserDetails) ? ((UserDetails) principal).getUsername() : principal.toString();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return postRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
+                .stream()
+                .filter(post -> post.getUser().getId() == user.getId())
+                .map(post -> {
+                    boolean isLiked = likeRepository.existsByPostAndUser(post, user);
+                    return PostMapper.toPostDTO(post, isLiked);
+                })
+                .collect(Collectors.toList());
+    }
+
 }
 

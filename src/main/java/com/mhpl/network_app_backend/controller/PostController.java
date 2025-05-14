@@ -75,4 +75,10 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
         }
     }
+
+    @GetMapping("/my-posts")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<PostDTO>> getMyPosts() {
+        return ResponseEntity.ok(postService.getPostsByCurrentUser());
+    }
 }
