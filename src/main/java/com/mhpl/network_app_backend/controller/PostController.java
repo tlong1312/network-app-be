@@ -76,9 +76,9 @@ public class PostController {
         }
     }
 
-    @GetMapping("/my-posts")
+    @GetMapping("/info-post/{userId}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<PostDTO>> getMyPosts() {
-        return ResponseEntity.ok(postService.getPostsByCurrentUser());
+    public ResponseEntity<List<PostDTO>> getPostsByUserId(@PathVariable int userId) {
+        return ResponseEntity.ok(postService.getPostsByUserId(userId));
     }
 }
