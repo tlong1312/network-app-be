@@ -23,5 +23,5 @@ The backend RESTful API service for a social networking platform. This system is
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/your-username/Social-Network-Backend.git](https://github.com/your-username/Social-Network-Backend.git)
-   cd Social-Network-Backend
+   git clone https://github.com/tlong1312/network-app-be.git
+   cd network-app-be
