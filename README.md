@@ -2,7 +2,7 @@
 
 The backend RESTful API service for a social networking platform. This system is designed to handle user interactions, real-time notifications, and secure media processing.
 
-**Frontend Repository:** [Insert Link to Frontend Repo Here]
+**Frontend Repository:** https://github.com/tlong1312/network-app
 
 ## System Architecture & Core Features
 
