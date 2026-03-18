@@ -1,5 +1,6 @@
 package com.mhpl.network_app_backend.service.Impl;
 
+import com.mhpl.network_app_backend.dto.NotificationDTO;
 import com.mhpl.network_app_backend.entity.Comment;
 import com.mhpl.network_app_backend.entity.Post;
 import com.mhpl.network_app_backend.entity.User;
@@ -8,6 +9,7 @@ import com.mhpl.network_app_backend.repository.CommentRepository;
 import com.mhpl.network_app_backend.repository.PostRepository;
 import com.mhpl.network_app_backend.repository.UserRepository;
 import com.mhpl.network_app_backend.service.CommentService;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -23,11 +25,13 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public CommentServiceImpl(CommentRepository commentRepository, PostRepository postRepository, UserRepository userRepository) {
+    public CommentServiceImpl(CommentRepository commentRepository, PostRepository postRepository, UserRepository userRepository, SimpMessagingTemplate messagingTemplate) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @Override
@@ -53,6 +57,18 @@ public class CommentServiceImpl implements CommentService {
         comment.getPost().setCommentCount(comment.getPost().getCommentCount() + 1);
 
         Comment savedComment = commentRepository.save(comment);
+
+        if(!post.getUser().getUsername().equals(username)) {
+            String recipientUsername = post.getUser().getUsername();
+            NotificationDTO notification = new NotificationDTO(
+                    "COMMENT",
+                    username + " đã bình luận bài viết của bạn.",
+                    username,
+                    postId
+            );
+            messagingTemplate.convertAndSendToUser(recipientUsername, "/queue/notifications", notification);
+        }
+
         return CommentMapper.toCommentDTO(savedComment);
     }
 

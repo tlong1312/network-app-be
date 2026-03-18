@@ -2,6 +2,7 @@ package com.mhpl.network_app_backend.service.Impl;
 
 
 import com.mhpl.network_app_backend.dto.FriendUserDTO;
+import com.mhpl.network_app_backend.dto.NotificationDTO;
 import com.mhpl.network_app_backend.dto.UserDTO;
 import com.mhpl.network_app_backend.entity.Friend;
 import com.mhpl.network_app_backend.entity.Status;
@@ -10,6 +11,7 @@ import com.mhpl.network_app_backend.map.UserMapper;
 import com.mhpl.network_app_backend.repository.FriendRepository;
 import com.mhpl.network_app_backend.repository.UserRepository;
 import com.mhpl.network_app_backend.service.FriendService;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,12 +23,15 @@ import java.util.stream.Collectors;
 @Service
 public class FriendServiceImpl implements FriendService {
 
-    private FriendRepository friendRepository;
-    private UserRepository userRepository;
+    private final FriendRepository friendRepository;
+    private final UserRepository userRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public FriendServiceImpl(FriendRepository friendRepository, UserRepository userRepository) {
+
+    public FriendServiceImpl(FriendRepository friendRepository, UserRepository userRepository, SimpMessagingTemplate messagingTemplate) {
         this.friendRepository = friendRepository;
         this.userRepository = userRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @Override
@@ -37,6 +42,15 @@ public class FriendServiceImpl implements FriendService {
         Friend friend = new Friend(userId, friendId, Status.pending);
         friend.setCreatedAt(LocalDateTime.now());
         friendRepository.save(friend);
+
+        User sender = userRepository.findById(userId).orElseThrow();
+        User recipient = userRepository.findById(friendId).orElseThrow();
+        NotificationDTO notification = new NotificationDTO(
+                "FRIEND_REQUEST",
+                sender.getUsername() + " đã gửi cho bạn một lời mời kết bạn.",
+                sender.getUsername()
+        );
+        messagingTemplate.convertAndSendToUser(recipient.getUsername(), "/queue/notifications", notification);
     }
 
     @Override
@@ -46,6 +60,15 @@ public class FriendServiceImpl implements FriendService {
 
         friend.setStatus(Status.accepted);
         friendRepository.save(friend);
+
+        User acceptor = userRepository.findById(userId).orElseThrow();
+        User originalSender = userRepository.findById(friendId).orElseThrow();
+        NotificationDTO notification = new NotificationDTO(
+                "FRIEND_ACCEPT",
+                acceptor.getUsername() + " đã chấp nhận lời mời kết bạn của bạn.",
+                acceptor.getUsername()
+        );
+        messagingTemplate.convertAndSendToUser(originalSender.getUsername(), "/queue/notifications", notification);
 
     }
 

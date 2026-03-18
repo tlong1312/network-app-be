@@ -26,8 +26,6 @@ public class StoryController {
         List<StoryDTO> stories = storyService.getAllStories();
         return ResponseEntity.ok(stories);
     }
-
-    // Endpoint to post a story
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> postStory(@RequestBody StoryImageDTO storyImageDTO) {

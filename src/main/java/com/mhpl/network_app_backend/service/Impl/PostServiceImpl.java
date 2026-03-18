@@ -1,5 +1,6 @@
 package com.mhpl.network_app_backend.service.Impl;
 
+import com.mhpl.network_app_backend.dto.NotificationDTO;
 import com.mhpl.network_app_backend.dto.PostDTO;
 import com.mhpl.network_app_backend.entity.Like;
 import com.mhpl.network_app_backend.entity.Post;
@@ -10,6 +11,7 @@ import com.mhpl.network_app_backend.repository.PostRepository;
 import com.mhpl.network_app_backend.repository.UserRepository;
 import com.mhpl.network_app_backend.service.PostService;
 import org.springframework.data.domain.Sort;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -25,11 +27,13 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public PostServiceImpl(PostRepository postRepository, UserRepository userRepository, LikeRepository likeRepository) {
+    public PostServiceImpl(PostRepository postRepository, UserRepository userRepository, LikeRepository likeRepository, SimpMessagingTemplate messagingTemplate) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.likeRepository = likeRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @Override
@@ -159,6 +163,17 @@ public class PostServiceImpl implements PostService {
             likeRepository.save(like);
             post.setLikeCount(post.getLikeCount() + 1);
             post.setIsLiked(true);
+
+            if(!post.getUser().getUsername().equals(username)) {
+                String recipientUsername = post.getUser().getUsername();
+                NotificationDTO notification = new NotificationDTO(
+                  "LIKE",
+                  username + " đã thích bài viết của bạn.",
+                  username,
+                  postId
+                );
+                messagingTemplate.convertAndSendToUser(recipientUsername, "/queue/notifications", notification);
+            }
         }
 
         postRepository.save(post);

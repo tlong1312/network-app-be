@@ -30,7 +30,6 @@ public class PostMapper {
         post.setId(postDTO.getId());
         post.setContent(postDTO.getContent());
         post.setMediaUrl(postDTO.getMediaUrl());
-        // Do not set user, createdAt, commentCount, or likeCount here
         return post;
     }
 }
